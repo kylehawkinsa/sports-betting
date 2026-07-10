@@ -1,0 +1,36 @@
+# EDGE HUB configuration
+# API keys never live here — see .env.example.
+
+unit_size_usd: 100        # display only; stakes are expressed in units
+
+gates:                    # Part 4 — changing these does NOT loosen the code
+  edge_pp: 3.0            # absolute gate, percentage points vs fair
+  ratio: 1.15             # model_prob / implied(best price)
+  prelim_edge_pp: 4.0     # PRELIMINARY (lineups unposted)
+  prelim_ratio: 1.20
+
+odds:
+  provider: the_odds_api  # the_odds_api | sportsgameodds | odds_api_io
+  # de-vig reference: first book in this list with both sides quoted;
+  # none present -> multi-book consensus. Keys are provider book keys.
+  book_priority: [pinnacle, circa, betonlineag, lowvig, bovada]
+
+mlb:
+  sims: 10000
+  # HR-wind-sensitive parks and center-field bearings (degrees true north)
+  # used ONLY to classify sourced wind direction as out/in.
+  parks:
+    "Wrigley Field":            {hr_wind_sensitive: true, cf_bearing_deg: 40}
+    "Great American Ball Park": {hr_wind_sensitive: true, cf_bearing_deg: 118}
+    "Yankee Stadium":           {hr_wind_sensitive: true, cf_bearing_deg: 75}
+
+tennis:
+  atp: true
+  wta: true
+  default_surface: Hard   # used only when the odds provider omits surface
+  tour_avg_rpw: 0.38      # manual-mode fallback; fetched path computes it
+                          # from the Sackmann window instead
+
+splits:
+  dk_enabled: false       # DK Network splits feed is unofficial; off by default
+  dk_url: null            # override endpoint if you have a working one
