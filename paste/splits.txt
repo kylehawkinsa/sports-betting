@@ -1,0 +1,13 @@
+# PASTE MODE — betting splits (Action Network PRO text), MLB.
+#
+# How to use from the GitHub website (no terminal needed):
+#   1. Open this file on github.com and click the pencil (Edit) icon.
+#   2. Paste the splits text BELOW these instructions. Lines starting
+#      with # are ignored. One market per line, for example:
+#          Example Team ML 38% bets / 61% handle
+#   3. Commit the change, then go to the Actions tab and run the
+#      "daily-board" workflow.
+#
+# The workflow uses these numbers for that one run, then clears this
+# file automatically — stale splits are never reused on a later slate.
+# Splits are context only; they never open or close the edge gate.
