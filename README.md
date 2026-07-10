@@ -81,6 +81,19 @@ proof; small-sample W/L is noise and the board says so.
 - `.github/workflows/closing.yml` — 04:00 UTC: closing lines → CLV → commit.
 - Odds API keys go in repo **secrets** (`THE_ODDS_API_KEY`, etc.).
 
+## Running everything from github.com (no terminal — Chromebook-friendly)
+
+1. Add your odds key: **Settings → Secrets and variables → Actions →
+   New repository secret** (`THE_ODDS_API_KEY` or `SPORTSGAMEODDS_API_KEY`).
+2. The board generates itself daily at 14:00 UTC, or on demand via
+   **Actions → daily-board → Run workflow**.
+3. Read `reports/YYYY-MM-DD.md` in the **Code** tab.
+4. Paste modes: edit **`paste/splits.txt`** (Action Network PRO splits) or
+   **`paste/tennis.txt`** (manual SPW/RPW) with the pencil icon, commit,
+   then run the daily-board workflow. Instructions are inside each file.
+   The workflow consumes the inputs once and clears the files so stale
+   numbers can never leak onto a later slate.
+
 ## Repo map
 
 ```

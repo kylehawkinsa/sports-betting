@@ -17,16 +17,26 @@ jobs:
           python-version: "3.11"
           cache: pip
       - run: pip install -r requirements.txt
-      - name: Run daily board
+      - name: Run daily board (picks up paste/ files if filled in)
         env:
           THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
           SPORTSGAMEODDS_API_KEY: ${{ secrets.SPORTSGAMEODDS_API_KEY }}
           ODDS_API_IO_KEY: ${{ secrets.ODDS_API_IO_KEY }}
-        run: python run_daily.py
+        run: |
+          ARGS=""
+          if [ -f paste/splits.txt ] && grep -vE '^\s*(#|$)' paste/splits.txt | grep -q .; then
+            ARGS="$ARGS --splits-paste paste/splits.txt"
+          fi
+          if [ -f paste/tennis.txt ] && grep -vE '^\s*(#|$)' paste/tennis.txt | grep -q .; then
+            ARGS="$ARGS --tennis-manual paste/tennis.txt"
+          fi
+          python run_daily.py $ARGS
+      - name: Clear used paste inputs (stale splits must never reach a later slate)
+        run: sed -i '/^[^#]/d' paste/splits.txt paste/tennis.txt
       - name: Commit report + openers + CLV log
         run: |
           git config user.name "edge-hub-bot"
           git config user.email "edge-hub-bot@users.noreply.github.com"
-          git add reports/*.md data/openers data/clv ERRORS.md || true
+          git add reports/*.md data/openers data/clv ERRORS.md paste || true
           git diff --cached --quiet || git commit -m "daily board $(date -u +%F)"
           git push

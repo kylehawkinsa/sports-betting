@@ -24,6 +24,15 @@ def test_splits_paste_variants(tmp_path):
     assert m.records[-1].rows == 3
 
 
+def test_splits_paste_ignores_comment_lines(tmp_path):
+    # instruction headers in paste/splits.txt must never parse as data
+    f = tmp_path / "splits.txt"
+    f.write_text("# Reds ML 38% bets / 61% handle\nReds ML 40% bets / 55% handle\n")
+    out = parse_splits_paste(f, ["Reds"], Manifest())
+    assert len(out["Reds"]) == 1
+    assert out["Reds"][0].bets_pct == 40.0
+
+
 def test_splits_paste_missing_file(tmp_path):
     m = Manifest()
     out = parse_splits_paste(tmp_path / "nope.txt", ["Reds"], m)

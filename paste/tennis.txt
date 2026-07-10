@@ -1,0 +1,18 @@
+# MANUAL INPUT MODE — tennis SPW/RPW, the guaranteed no-API path.
+#
+# How to use from the GitHub website (no terminal needed):
+#   1. Open this file on github.com and click the pencil (Edit) icon.
+#   2. Add one block per match BELOW these instructions (lines starting
+#      with # are ignored; separate matches with a blank line):
+#
+#          match: Player One vs Player Two
+#          surface: clay
+#          best_of: 5
+#          A: spw=67.1 rpw=41.2 spw_surface=69.0 rpw_surface=43.1 matches=52 matches_surface=18
+#          B: spw=68.9 rpw=39.8 matches=61
+#
+#      spw/rpw accept 64.2 or 0.642. surface-specific rates are optional.
+#      A player with matches under 20 is INSUFFICIENT DATA — never a play.
+#   3. Commit, then run the "daily-board" workflow from the Actions tab.
+#
+# The workflow uses these inputs once, then clears this file automatically.

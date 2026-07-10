@@ -58,7 +58,7 @@ def parse_splits_paste(path: str | Path, team_names: list[str],
     parsed = 0
     for raw in text.splitlines():
         line = raw.strip()
-        if not line:
+        if not line or line.startswith("#"):  # comment lines are never parsed
             continue
         pcts = None
         for pat in PATTERNS:
