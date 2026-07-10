@@ -15,8 +15,8 @@ from adapters.odds_adapter import (
     best_price,
     reference_book_pair,
 )
-from gates.edge_gate import GateResult, evaluate
-from models.devig import consensus_fair, devig_two_way
+from gates.edge_gate import GateResult, evaluate, thresholds_from_config
+from models.devig import american_to_decimal, consensus_fair, devig_two_way
 
 
 @dataclass
@@ -41,9 +41,12 @@ def eval_two_way(
     line: float | None = None,
     preliminary: bool = False,
     insufficient: bool = False,
+    config: dict | None = None,
 ) -> tuple[MarketEval, MarketEval]:
     """Evaluate both sides of a two-sided market. model_prob_a is the model
-    probability of side_a; side_b gets its complement."""
+    probability of side_a; side_b gets its complement. Gate thresholds come
+    from config.yaml `gates:` when config is given."""
+    edge_req, ratio_req = thresholds_from_config(config, preliminary)
     fair_a = fair_b = None
     ref_book = None
     ref = reference_book_pair(quotes, side_a, side_b, book_priority, line=line)
@@ -67,13 +70,24 @@ def eval_two_way(
     model_b = (1.0 - model_prob_a) if model_prob_a is not None else None
 
     ga = evaluate(model_prob_a, fair_a, ba.price if ba else None,
-                  preliminary=preliminary, insufficient_data=insufficient)
+                  preliminary=preliminary, insufficient_data=insufficient,
+                  edge_pp_req=edge_req, ratio_req=ratio_req)
     gb = evaluate(model_b, fair_b, bb.price if bb else None,
-                  preliminary=preliminary, insufficient_data=insufficient)
+                  preliminary=preliminary, insufficient_data=insufficient,
+                  edge_pp_req=edge_req, ratio_req=ratio_req)
     return (
         MarketEval(market, side_a, line, ba, fair_a, model_prob_a, ref_book, ga),
         MarketEval(market, side_b, line, bb, fair_b, model_b, ref_book, gb),
     )
+
+
+def ev_per_unit(p: float | None, price: int | float | None) -> float | None:
+    """Expected value of a 1u bet at `price` given model probability p:
+    EV = p·(dec−1) − (1−p). Positive = +EV at the model number."""
+    if p is None or price is None:
+        return None
+    b = american_to_decimal(price) - 1.0
+    return p * b - (1.0 - p)
 
 
 def fmt_price(price: int | float | None) -> str:

@@ -1,0 +1,32 @@
+{
+ "Beta Returner@Alpha Server": {
+  "ml": {
+   "Alpha Server|": {
+    "price": -115,
+    "line": null,
+    "book": "pinnacle",
+    "ts": "2026-07-10T16:41:08Z"
+   },
+   "Beta Returner|": {
+    "price": -105,
+    "line": null,
+    "book": "pinnacle",
+    "ts": "2026-07-10T16:41:08Z"
+   }
+  },
+  "total_games": {
+   "over|22.5": {
+    "price": -110,
+    "line": 22.5,
+    "book": "pinnacle",
+    "ts": "2026-07-10T16:42:30Z"
+   },
+   "under|22.5": {
+    "price": -110,
+    "line": 22.5,
+    "book": "pinnacle",
+    "ts": "2026-07-10T16:42:30Z"
+   }
+  }
+ }
+}

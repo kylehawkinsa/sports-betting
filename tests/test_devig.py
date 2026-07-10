@@ -64,3 +64,14 @@ def test_consensus_fair_averages_books():
 def test_consensus_fair_empty_raises():
     with pytest.raises(ValueError):
         consensus_fair({})
+
+
+def test_best_price_orders_across_sign_boundary():
+    """Line shopping must rank by payout: +100 beats -105 beats -115 beats
+    -200. (Regression: a bad sort key preferred bigger negative numbers.)"""
+    from adapters.odds_adapter import Quote, best_price
+    quotes = [Quote(book=b, side="A", price=p)
+              for b, p in [("w", -200), ("x", -115), ("y", -105), ("z", 100)]]
+    assert best_price(quotes, "A").price == 100
+    assert best_price(quotes[:3], "A").price == -105
+    assert best_price(quotes[:2], "A").price == -115

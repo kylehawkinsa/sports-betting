@@ -3,11 +3,16 @@
 
 unit_size_usd: 100        # display only; stakes are expressed in units
 
-gates:                    # Part 4 — changing these does NOT loosen the code
-  edge_pp: 3.0            # absolute gate, percentage points vs fair
-  ratio: 1.15             # model_prob / implied(best price)
-  prelim_edge_pp: 4.0     # PRELIMINARY (lineups unposted)
-  prelim_ratio: 1.20
+# Gate thresholds. Both gates must still pass for a PLAY — these numbers
+# only set where the bar sits. Owner setting (2026-07): show everything
+# with ANY positive edge; stakes still scale with edge via quarter-Kelly,
+# so tiny edges get tiny stakes. Spec-discipline values were
+# edge_pp: 3.0 / ratio: 1.15 (prelim 4.0 / 1.20) — restore anytime.
+gates:
+  edge_pp: 0.01           # absolute gate, percentage points vs fair
+  ratio: 1.00             # model_prob / implied(best price)
+  prelim_edge_pp: 0.5     # PRELIMINARY (lineups unposted) — slightly stricter
+  prelim_ratio: 1.01
 
 odds:
   provider: the_odds_api  # the_odds_api | sportsgameodds | odds_api_io

@@ -91,6 +91,28 @@ def test_stake_capped_at_one_unit():
     assert r.kelly.capped
 
 
+def test_config_thresholds_override_defaults():
+    from gates.edge_gate import thresholds_from_config
+    cfg = {"gates": {"edge_pp": 0.01, "ratio": 1.00,
+                     "prelim_edge_pp": 0.5, "prelim_ratio": 1.01}}
+    e, r = thresholds_from_config(cfg, preliminary=False)
+    assert (e, r) == (0.01, 1.00)
+    e, r = thresholds_from_config(cfg, preliminary=True)
+    assert (e, r) == (0.5, 1.01)
+    # empty config falls back to spec defaults
+    assert thresholds_from_config({}, False) == (3.0, 1.15)
+    assert thresholds_from_config(None, True) == (4.0, 1.20)
+
+
+def test_loosened_gate_promotes_small_edges():
+    # 1pp edge, ratio 1.03: PASS at spec thresholds, PLAY at owner's 0.01/1.00
+    r_spec = evaluate(0.51, 0.50, 105)
+    r_loose = evaluate(0.51, 0.50, 105, edge_pp_req=0.01, ratio_req=1.00)
+    assert r_spec.verdict in ("PASS", "LEAN")
+    assert r_loose.verdict == "PLAY"
+    assert 0 < r_loose.stake_units < 0.5   # tiny edge -> tiny quarter-Kelly stake
+
+
 def test_splits_have_no_gate_parameter():
     """Splits are context, never a model input: the gate API must not even
     accept them."""

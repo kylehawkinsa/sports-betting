@@ -39,6 +39,8 @@ class MatchCard:
     total_line: float | None = None
     total_probs_pm1: dict[float, float] = field(default_factory=dict)
     spread_line: float | None = None
+    pa: float | None = None          # P(A wins point on A's serve), post-adjust
+    pb: float | None = None
     source_mode: str = ""            # "sackmann" | "manual"
     model_note: str = ""
     why: str = ""
@@ -69,7 +71,8 @@ def _best_of_for(ev: OddsEvent, tour: str) -> int:
     return ev.best_of or 3
 
 
-def _evaluate_markets(card: MatchCard, book_priority: list[str]) -> None:
+def _evaluate_markets(card: MatchCard, book_priority: list[str],
+                      config: dict | None = None) -> None:
     ev, dist = card.odds_event, card.dist
     if ev is None or dist is None:
         return
@@ -77,7 +80,8 @@ def _evaluate_markets(card: MatchCard, book_priority: list[str]) -> None:
     ml = ev.markets.get("ml", [])
     if ml:
         a, b = eval_two_way("ml", ml, ev.home, ev.away, dist.p_match_a,
-                            book_priority, insufficient=insufficient)
+                            book_priority, insufficient=insufficient,
+                            config=config)
         card.evals += [a, b]
     sp = ev.markets.get("spread", [])
     line_a = consensus_line(sp, ev.home)
@@ -86,14 +90,17 @@ def _evaluate_markets(card: MatchCard, book_priority: list[str]) -> None:
         p_cover = dist.p_spread_a(line_a)
         a, b = eval_two_way("spread", sp, ev.home, ev.away, p_cover,
                             book_priority, line=line_a,
-                            insufficient=insufficient)
+                            insufficient=insufficient, config=config)
         # opposite side has mirrored line; refresh its best price/gate
         from adapters.odds_adapter import best_price  # noqa: PLC0415
         from gates.edge_gate import evaluate as _ev  # noqa: PLC0415
+        from gates.edge_gate import thresholds_from_config  # noqa: PLC0415
+        _er, _rr = thresholds_from_config(config, False)
         bb = best_price(sp, ev.away, line=-line_a)
         b.best, b.line = bb, -line_a
         b.gate = _ev(b.model_prob, b.fair_prob, bb.price if bb else None,
-                     insufficient_data=insufficient)
+                     insufficient_data=insufficient,
+                     edge_pp_req=_er, ratio_req=_rr)
         card.evals += [a, b]
     tg = ev.markets.get("total_games", [])
     line = consensus_line(tg, "over")
@@ -106,7 +113,8 @@ def _evaluate_markets(card: MatchCard, book_priority: list[str]) -> None:
             line + 1: dist.p_total_over(line + 1),
         }
         o, u = eval_two_way("total_games", tg, "over", "under", p_over,
-                            book_priority, line=line, insufficient=insufficient)
+                            book_priority, line=line, insufficient=insufficient,
+                            config=config)
         card.evals += [o, u]
 
 
@@ -150,6 +158,7 @@ def run_tennis(date_str: str, config: dict, manifest: Manifest,
             card.model_note = "inputs rejected (implausible serve-win prob)"
         if combine_pair and m.format_supported:
             pa, pb = combine_pair
+            card.pa, card.pb = pa, pb
             card.dist = match_distribution(pa, pb, best_of=m.best_of)
             card.why = (f"manual SPW/RPW: pa={pa:.3f} pb={pb:.3f}, "
                         f"{m.surface}, Bo{m.best_of}")
@@ -165,7 +174,7 @@ def run_tennis(date_str: str, config: dict, manifest: Manifest,
                     card.start_utc = ev.start_utc
                     card.tournament = ev.tournament
                     break
-        _evaluate_markets(card, book_priority)
+        _evaluate_markets(card, book_priority, config)
         cards.append(card)
 
     # ---- fetched path: Sackmann rates for remaining odds events
@@ -212,13 +221,14 @@ def run_tennis(date_str: str, config: dict, manifest: Manifest,
                 pair = _blend_inputs(ra, rb, avg_rpw)
                 if pair:
                     pa, pb = pair
+                    card.pa, card.pb = pa, pb
                     card.dist = match_distribution(pa, pb, best_of=card.best_of)
                     surf_note = ("" if ra.spw_surface is not None
                                  and rb.spw_surface is not None
                                  else " (surface sample missing — overall used)")
                     card.why = (f"52-wk SPW/RPW: pa={pa:.3f} pb={pb:.3f}, "
                                 f"{surface}, Bo{card.best_of}{surf_note}")
-            _evaluate_markets(card, book_priority)
+            _evaluate_markets(card, book_priority, config)
             cards.append(card)
 
     return cards

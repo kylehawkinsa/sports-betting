@@ -20,7 +20,7 @@ from pathlib import Path
 from core.config import get_api_key
 from core.http import fetch_json
 from core.manifest import Manifest, SourceRecord, utcnow_iso
-from models.devig import american_to_implied
+from models.devig import american_to_decimal, american_to_implied
 
 ROOT = Path(__file__).resolve().parent.parent
 OPENERS_DIR = ROOT / "data" / "openers"
@@ -294,7 +294,8 @@ def best_price(quotes: list[Quote], side: str,
              and (line is None or q.line == line)]
     if not cands:
         return None
-    return max(cands, key=lambda q: (q.price if q.price > 0 else -1e9 / q.price))
+    # decimal odds are monotone in payout across the +/- american boundary
+    return max(cands, key=lambda q: american_to_decimal(q.price))
 
 
 def consensus_line(quotes: list[Quote], side: str) -> float | None:

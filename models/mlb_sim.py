@@ -77,8 +77,12 @@ class SimResult:
     p_home_plus_15: float        # P(home wins) + P(home loses by exactly 1)
     p_away_plus_15: float
     mean_total: float
-    total_samples: np.ndarray = field(repr=False)
-    margin_samples: np.ndarray = field(repr=False)   # home - away
+    home_mean: float = 0.0
+    away_mean: float = 0.0
+    p_one_run: float = 0.0        # P(|margin| == 1) — the RL killer
+    p_extras: float = 0.0         # P(game tied after 9)
+    total_samples: np.ndarray = field(repr=False, default=None)
+    margin_samples: np.ndarray = field(repr=False, default=None)  # home - away
     n_sims: int = N_SIMS
     model_inputs_note: str = ""
 
@@ -215,6 +219,7 @@ def simulate_game(home: TeamInputs, away: TeamInputs,
     mu_x_home = mus_home[8] + EXTRA_INNING_BONUS_MU
     mu_x_away = mus_away[8] + EXTRA_INNING_BONUS_MU
     tied = home_runs == away_runs
+    p_extras = float(np.mean(tied))
     for _ in range(MAX_EXTRA_INNINGS):
         if not tied.any():
             break
@@ -242,6 +247,10 @@ def simulate_game(home: TeamInputs, away: TeamInputs,
         p_home_plus_15=float(np.mean(margin >= -1)),
         p_away_plus_15=float(np.mean(margin <= 1)),
         mean_total=float(np.mean(total)),
+        home_mean=float(np.mean(home_runs)),
+        away_mean=float(np.mean(away_runs)),
+        p_one_run=float(np.mean(np.abs(margin) == 1)),
+        p_extras=p_extras,
         total_samples=total,
         margin_samples=margin,
         n_sims=n_sims,

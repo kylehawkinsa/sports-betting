@@ -23,7 +23,8 @@ ROOT = Path(__file__).resolve().parent.parent
 CACHE = ROOT / "data" / "cache"
 DAY_SECONDS = 86_400
 
-BASE = "https://raw.githubusercontent.com/JeffSackmann/{repo}/master/{repo}_matches_{year}.csv"
+# repo tennis_atp holds files named atp_matches_{year}.csv (same for wta)
+BASE = "https://raw.githubusercontent.com/JeffSackmann/{repo}/master/{tour}_matches_{year}.csv"
 
 MIN_MATCHES = 20
 SURFACES = ("Hard", "Clay", "Grass")
@@ -47,7 +48,7 @@ class PlayerRates:
 
 def _load_year(tour: str, year: int, manifest: Manifest) -> pd.DataFrame | None:
     repo = f"tennis_{tour}"
-    url = BASE.format(repo=repo, year=year)
+    url = BASE.format(repo=repo, tour=tour, year=year)
     path = CACHE / f"{repo}_{year}.csv"
     if path.exists() and (time.time() - path.stat().st_mtime) < DAY_SECONDS:
         df = pd.read_csv(path, low_memory=False)

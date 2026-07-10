@@ -24,6 +24,18 @@ PRELIM_EDGE_PP = 4.0
 PRELIM_RATIO = 1.20
 
 
+def thresholds_from_config(config: dict | None,
+                           preliminary: bool) -> tuple[float, float]:
+    """Read gate thresholds from config.yaml `gates:`; module defaults
+    apply for anything unset."""
+    g = (config or {}).get("gates", {}) or {}
+    if preliminary:
+        return (float(g.get("prelim_edge_pp", PRELIM_EDGE_PP)),
+                float(g.get("prelim_ratio", PRELIM_RATIO)))
+    return (float(g.get("edge_pp", EDGE_PP)),
+            float(g.get("ratio", RATIO)))
+
+
 @dataclass
 class GateResult:
     verdict: str                 # "PLAY" | "LEAN" | "PASS" | "INSUFFICIENT DATA" | "NO MARKET"
@@ -43,8 +55,14 @@ def evaluate(
     best_price: int | float | None,
     preliminary: bool = False,
     insufficient_data: bool = False,
+    edge_pp_req: float | None = None,
+    ratio_req: float | None = None,
 ) -> GateResult:
-    """Gate a single side of a single market. Default verdict is PASS."""
+    """Gate a single side of a single market. Default verdict is PASS.
+
+    edge_pp_req / ratio_req override the module defaults (set them from
+    config.yaml `gates:`). The structure never changes — both gates must
+    pass for a PLAY regardless of where the thresholds sit."""
     if insufficient_data:
         return GateResult(verdict="INSUFFICIENT DATA",
                           reasons=["sample below data-quality gate"])
@@ -57,8 +75,10 @@ def evaluate(
         return GateResult(verdict="PASS",
                           reasons=[f"model prob failed sanity: {model_prob}"])
 
-    edge_pp_req = PRELIM_EDGE_PP if preliminary else EDGE_PP
-    ratio_req = PRELIM_RATIO if preliminary else RATIO
+    if edge_pp_req is None:
+        edge_pp_req = PRELIM_EDGE_PP if preliminary else EDGE_PP
+    if ratio_req is None:
+        ratio_req = PRELIM_RATIO if preliminary else RATIO
 
     edge_pp = (model_prob - fair_prob) * 100.0
     implied_best = american_to_implied(best_price)

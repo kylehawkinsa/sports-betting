@@ -70,6 +70,37 @@ def test_play_path_end_to_end(tmp_path, monkeypatch):
     assert "== PLAYS ==" in board
     assert "Alpha Server" in board and "STAKE" in board
     assert "kelly: f*" in board                 # Kelly math is shown
+    # DEEP DIVE: full reasoning present for every match, not just verdicts
+    assert "== DEEP DIVE ==" in board
+    assert "Serve-point win" in board and "hold" in board
+    assert "Markov chain" in board and "expected total games" in board
+    assert "EV/1u" in board and "IMPLIED" in board and "FAIR" in board
+
+
+def test_owner_loosened_gates_apply_via_config():
+    cfg = {**CONFIG, "gates": {"edge_pp": 0.01, "ratio": 1.00,
+                               "prelim_edge_pp": 0.5, "prelim_ratio": 1.01}}
+    manifest = Manifest()
+    # small model edge: fair ~52.4/47.6 from -115/-105; model 54% on A
+    ev = OddsEvent(
+        sport="tennis", event_id="t2", home="Alpha Server",
+        away="Beta Returner", start_utc="", tournament="ATP Test",
+        markets={"ml": [
+            Quote(book="pinnacle", side="Alpha Server", price=-115),
+            Quote(book="pinnacle", side="Beta Returner", price=-105),
+            # line shopping: a softer book hangs +100 on A
+            Quote(book="draftkings", side="Alpha Server", price=100),
+            Quote(book="draftkings", side="Beta Returner", price=-125),
+        ]})
+    m = ManualMatch(
+        player_a=ManualPlayer("Alpha Server", spw=0.641, rpw=0.380, matches=50),
+        player_b=ManualPlayer("Beta Returner", spw=0.638, rpw=0.378, matches=50),
+        surface="Hard", best_of=3)
+    cards = run_tennis("2026-07-10", cfg, manifest, [ev], [m])
+    ml_a = next(e for e in cards[0].evals if e.side == "Alpha Server")
+    # this small an edge is a PASS under spec gates but a PLAY here
+    assert 0 < (ml_a.gate.edge_pp or 0) < 3.0
+    assert ml_a.gate.verdict == "PLAY"
 
 
 def test_insufficient_data_blocks_play_despite_huge_edge():

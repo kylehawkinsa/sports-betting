@@ -46,6 +46,9 @@ class GameCard:
     splits: list[Splits] = field(default_factory=list)
     weather: Weather | None = None
     weather_note: str = ""
+    home_inputs: "TeamInputs | None" = None
+    away_inputs: "TeamInputs | None" = None
+    park_factor: float | None = None
     why: str = ""
     model_note: str = ""
     openers: dict = field(default_factory=dict)
@@ -198,6 +201,8 @@ def run_mlb(date_str: str, config: dict, manifest: Manifest,
             card.preliminary = True  # season-typical offense in use
 
         pf = _park_factor(pf_table, g.venue_name)
+        card.home_inputs, card.away_inputs = home_in, away_in
+        card.park_factor = pf
 
         # ---- simulate (10k joint samples; ML, RL, total from same run)
         sim = simulate_game(home_in, away_in, park_factor=pf,
@@ -231,7 +236,8 @@ def run_mlb(date_str: str, config: dict, manifest: Manifest,
             if sim is not None:
                 ml_h, ml_a = eval_two_way("ml", ev.markets.get("ml", []),
                                           hs, as_, sim.home_win, book_priority,
-                                          preliminary=card.preliminary)
+                                          preliminary=card.preliminary,
+                                          config=config)
                 card.evals += [ml_h, ml_a]
 
                 rl_quotes = ev.markets.get("rl", [])
@@ -246,16 +252,19 @@ def run_mlb(date_str: str, config: dict, manifest: Manifest,
                         fav, dog = as_, hs
                     rl_f, rl_d = eval_two_way(
                         "rl", rl_quotes, fav, dog, p_fav, book_priority,
-                        line=-1.5, preliminary=card.preliminary)
+                        line=-1.5, preliminary=card.preliminary, config=config)
                     # dog quotes carry line +1.5; re-pull best at that line
                     from adapters.odds_adapter import best_price  # noqa: PLC0415
                     from gates.edge_gate import evaluate as _ev  # noqa: PLC0415
+                    from gates.edge_gate import thresholds_from_config  # noqa: PLC0415
+                    _er, _rr = thresholds_from_config(config, card.preliminary)
                     bd = best_price(rl_quotes, dog, line=1.5)
                     rl_d.best = bd
                     rl_d.line = 1.5
                     rl_d.gate = _ev(rl_d.model_prob, rl_d.fair_prob,
                                     bd.price if bd else None,
-                                    preliminary=card.preliminary)
+                                    preliminary=card.preliminary,
+                                    edge_pp_req=_er, ratio_req=_rr)
                     card.evals += [rl_f, rl_d]
 
                 tot_quotes = ev.markets.get("total", [])
@@ -270,7 +279,8 @@ def run_mlb(date_str: str, config: dict, manifest: Manifest,
                     }
                     ov, un = eval_two_way("total", tot_quotes, "over", "under",
                                           p_over, book_priority, line=line,
-                                          preliminary=card.preliminary)
+                                          preliminary=card.preliminary,
+                                          config=config)
                     card.evals += [ov, un]
 
         # ---- "why" line for plays
