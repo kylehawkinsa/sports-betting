@@ -31,3 +31,8 @@ after results are known.
 - `2026-07-14T15:20:14Z` **daily run 2026-07-14** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
 - `2026-07-15T15:22:39Z` **daily run 2026-07-15** — source FAIL: odds_mlb (THE_ODDS_API_KEY not set)
 - `2026-07-15T15:22:39Z` **daily run 2026-07-15** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
+- `2026-07-16T15:29:21Z` **daily run 2026-07-16** — source FAIL: odds_mlb (THE_ODDS_API_KEY not set)
+- `2026-07-16T15:29:21Z` **daily run 2026-07-16** — source FAIL: fangraphs_pitching (HTTPError: Error accessing 'https://www.fangraphs.com/leaders-legacy.aspx'. Received status code 403)
+- `2026-07-16T15:29:21Z` **daily run 2026-07-16** — source FAIL: park_factors (ParserError: Error tokenizing data. C error: Expected 1 fields in line 38, saw 4
+)
+- `2026-07-16T15:29:21Z` **daily run 2026-07-16** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
