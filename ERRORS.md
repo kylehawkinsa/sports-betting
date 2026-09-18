@@ -560,3 +560,14 @@ after results are known.
 - `2026-09-17T17:53:34Z` **daily run 2026-09-17** — source FAIL: park_factors (ParserError: Error tokenizing data. C error: Expected 1 fields in line 38, saw 4
 )
 - `2026-09-17T17:53:34Z` **daily run 2026-09-17** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
+- `2026-09-18T17:27:10Z` **daily run 2026-09-18** — source FAIL: odds_mlb (THE_ODDS_API_KEY not set)
+- `2026-09-18T17:27:10Z` **daily run 2026-09-18** — source FAIL: fangraphs_pitching (HTTPError: Error accessing 'https://www.fangraphs.com/leaders-legacy.aspx'. Received status code 403)
+- `2026-09-18T17:27:10Z` **daily run 2026-09-18** — source FAIL: park_factors (ParserError: Error tokenizing data. C error: Expected 1 fields in line 38, saw 4
+)
+- `2026-09-18T17:27:10Z` **daily run 2026-09-18** — source FAIL: wx_19 (ConnectTimeout: _ssl.c:999: The handshake operation timed out)
+- `2026-09-18T17:27:10Z` **daily run 2026-09-18** — source FAIL: wx_2392 (ConnectTimeout: _ssl.c:999: The handshake operation timed out)
+- `2026-09-18T17:27:10Z` **daily run 2026-09-18** — source FAIL: wx_2889 (ConnectTimeout: _ssl.c:999: The handshake operation timed out)
+- `2026-09-18T17:27:10Z` **daily run 2026-09-18** — source FAIL: wx_1 (ConnectTimeout: _ssl.c:999: The handshake operation timed out)
+- `2026-09-18T17:27:10Z` **daily run 2026-09-18** — source FAIL: wx_2680 (ConnectTimeout: _ssl.c:999: The handshake operation timed out)
+- `2026-09-18T17:27:10Z` **daily run 2026-09-18** — source FAIL: wx_15 (ConnectTimeout: _ssl.c:999: The handshake operation timed out)
+- `2026-09-18T17:27:10Z` **daily run 2026-09-18** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
