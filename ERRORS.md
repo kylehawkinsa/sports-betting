@@ -643,3 +643,5 @@ after results are known.
 - `2026-09-27T18:02:52Z` **daily run 2026-09-27** — source FAIL: wx_4169 (ConnectTimeout: _ssl.c:999: The handshake operation timed out)
 - `2026-09-27T18:02:52Z` **daily run 2026-09-27** — source FAIL: wx_32 (ConnectTimeout: _ssl.c:999: The handshake operation timed out)
 - `2026-09-27T18:02:52Z` **daily run 2026-09-27** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
+- `2026-09-28T20:20:43Z` **daily run 2026-09-28** — source FAIL: odds_mlb (THE_ODDS_API_KEY not set)
+- `2026-09-28T20:20:43Z` **daily run 2026-09-28** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
