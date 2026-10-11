@@ -699,3 +699,8 @@ after results are known.
 - `2026-10-10T18:10:11Z` **daily run 2026-10-10** — source FAIL: park_factors (ParserError: Error tokenizing data. C error: Expected 1 fields in line 38, saw 4
 )
 - `2026-10-10T18:10:11Z` **daily run 2026-10-10** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
+- `2026-10-11T18:34:48Z` **daily run 2026-10-11** — source FAIL: odds_mlb (THE_ODDS_API_KEY not set)
+- `2026-10-11T18:34:48Z` **daily run 2026-10-11** — source FAIL: fangraphs_pitching (HTTPError: Error accessing 'https://www.fangraphs.com/leaders-legacy.aspx'. Received status code 403)
+- `2026-10-11T18:34:48Z` **daily run 2026-10-11** — source FAIL: park_factors (ParserError: Error tokenizing data. C error: Expected 1 fields in line 38, saw 4
+)
+- `2026-10-11T18:34:48Z` **daily run 2026-10-11** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
