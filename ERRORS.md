@@ -746,3 +746,5 @@ after results are known.
 - `2026-10-19T19:36:01Z` **daily run 2026-10-19** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
 - `2026-10-20T18:14:07Z` **daily run 2026-10-20** — source FAIL: odds_mlb (THE_ODDS_API_KEY not set)
 - `2026-10-20T18:14:07Z` **daily run 2026-10-20** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
+- `2026-10-21T18:20:03Z` **daily run 2026-10-21** — source FAIL: odds_mlb (THE_ODDS_API_KEY not set)
+- `2026-10-21T18:20:03Z` **daily run 2026-10-21** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
