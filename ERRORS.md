@@ -760,3 +760,5 @@ after results are known.
 - `2026-10-24T17:09:09Z` **daily run 2026-10-24** — source FAIL: park_factors (ParserError: Error tokenizing data. C error: Expected 1 fields in line 38, saw 4
 )
 - `2026-10-24T17:09:09Z` **daily run 2026-10-24** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
+- `2026-10-25T17:21:34Z` **daily run 2026-10-25** — source FAIL: odds_mlb (THE_ODDS_API_KEY not set)
+- `2026-10-25T17:21:34Z` **daily run 2026-10-25** — source FAIL: odds_tennis (THE_ODDS_API_KEY not set)
